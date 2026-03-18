@@ -1,0 +1,49 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 22,
+        "patch": 1
+    },
+    "configurePresets": [
+        {
+            "name": "vcpkg",
+            "displayName": "vcpkg",
+            "toolchainFile": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "VCPKG_INSTALLED_DIR": "${sourceDir}/build/vcpkg_installed",
+                "VCPKG_INSTALL_OPTIONS": "--x-abi-tools-use-exact-versions;--downloads-root=${sourceDir}/build/vcpkg_downloads;--x-buildtrees-root=${sourceDir}/build/vcpkg_buildtrees;--x-packages-root=${sourceDir}/build/vcpkg_packages"
+            },
+            "hidden": true
+        },
+        {
+            "name": "linux-debug",
+            "displayName": "Linux Debug",
+            "inherits": ["vcpkg"],
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "linux-release",
+            "displayName": "Linux Release",
+            "inherits": ["vcpkg"],
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "linux-debug",
+            "configurePreset": "linux-debug"
+        },
+        {
+            "name": "linux-release",
+            "configurePreset": "linux-release"
+        }
+    ]
+}

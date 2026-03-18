@@ -4,3 +4,6 @@
 target/
 *.wasm
 *.bin
+build/
+node_modules/
+out/

@@ -15,6 +15,12 @@ install-hyperlight-wasm-aot:
         --version 0.9.0 \
         --root {{ TARGET_DIR }}
 
+build-cpp-component: make-out-dir install-hyperlight-wasm-aot install-wasm-tools
+    cmake --preset linux-release
+    cmake --build build
+    {{ BIN_DIR }}/wasm-tools component new {{ justfile_directory() }}/build/guest_cpp_wasm/src/guest_cpp_wasm-build/guest_cpp.wasm -o {{ OUT_DIR }}/sample-wasi-http-cpp.wasm
+    cd {{ OUT_DIR }} && {{ BIN_DIR }}/hyperlight-wasm-aot compile --component sample-wasi-http-cpp.wasm
+
 build-js-component: make-out-dir install-hyperlight-wasm-aot
     npm run build
     cd {{ OUT_DIR }} && {{ BIN_DIR }}/hyperlight-wasm-aot compile --component sample-wasi-http-js.wasm
@@ -43,3 +49,6 @@ run-rust: build build-rust-component
 
 run-js: build build-js-component
     cargo run -- {{ OUT_DIR }}/sample-wasi-http-js.aot
+
+run-cpp: build build-cpp-component
+    cargo run -- {{ OUT_DIR }}/sample-wasi-http-cpp.aot

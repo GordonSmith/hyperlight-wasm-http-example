@@ -12,11 +12,16 @@ server](https://github.com/bytecodealliance/sample-wasi-http-rust).
 2. `clang`
 3. [`just`](https://github.com/casey/just) (optional, but recommended)
 
+For building the C++ guest you will also need:
+
+4. `cmake` (>= 3.25)
+5. `ninja-build`
+
 If you want to follow the manual build instructions, you will also need:
 
-4. [`wasm-tools`](https://github.com/bytecodealliance/wasm-tools)
-5. [`cargo-component`](https://github.com/bytecodealliance/cargo-component)
-6. [`hyperlight-wasm-aot`](https://github.com/hyperlight-dev/hyperlight-wasm)
+6. [`wasm-tools`](https://github.com/bytecodealliance/wasm-tools)
+7. [`cargo-component`](https://github.com/bytecodealliance/cargo-component)
+8. [`hyperlight-wasm-aot`](https://github.com/hyperlight-dev/hyperlight-wasm)
 
 ## Simple setup
 
@@ -39,6 +44,9 @@ just run-rust
 
 # Run JS
 just run-js
+
+# Run C++
+just run-cpp
 ```
 
 From another terminal, you can then test the server:
@@ -100,6 +108,44 @@ cargo run -- out/sample_wasi_http_rust.aot
 JS:
 ```sh
 cargo run -- out/sample_wasi_http_js.aot
+```
+
+### C++ guest
+
+The C++ guest uses [vcpkg](https://vcpkg.io) to install [wasi-sdk](https://github.com/WebAssembly/wasi-sdk) automatically. The vcpkg submodule and overlay port handle the download and setup.
+
+#### Simple setup
+
+```sh
+just build-cpp-component
+just run-cpp
+```
+
+#### Manual setup
+
+Bootstrap vcpkg (first time only):
+```sh
+./vcpkg/bootstrap-vcpkg.sh
+```
+
+Configure and build the C++ guest using CMake presets (this installs wasi-sdk via vcpkg automatically):
+```sh
+cmake --preset linux-release
+cmake --build build
+```
+
+Convert the core wasm module into a wasi component and AOT compile it:
+```sh
+wasm-tools component new \
+    build/guest_cpp_wasm/src/guest_cpp_wasm-build/guest_cpp.wasm \
+    -o out/sample-wasi-http-cpp.wasm
+hyperlight-wasm-aot compile --component \
+    out/sample-wasi-http-cpp.wasm
+```
+
+Run the server:
+```sh
+cargo run -- out/sample-wasi-http-cpp.aot
 ```
 
 ## Try it yourself!

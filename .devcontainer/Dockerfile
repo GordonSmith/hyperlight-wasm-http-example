@@ -19,6 +19,7 @@ RUN apt-get update \
         gnupg \
         lsb-release \
         make \
+        ninja-build \
         pkg-config \
         software-properties-common \
         sudo \
@@ -62,6 +63,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
     && rustup target add x86_64-unknown-linux-musl \
     && rustup target add x86_64-unknown-none      \
     && rustup target add wasm32-wasip1             \
+    && rustup component add llvm-tools             \
     && rustup toolchain add nightly-x86_64-unknown-linux-gnu \
     && cargo install just \
     && cargo install cargo-component \
